@@ -1,3 +1,5 @@
+{% from "_renderfield.html" import renderfield %}
+
 <html>
 <head>
     <title>Login Form</title>
@@ -6,10 +8,17 @@
     <h1>The form is below!</h1>
     <form action="/" method="POST">
         {{ form.csrf_token }}
-        {{ form.username.label }}
-        {{ form.username }}
-        {{ form.password.label }}
-        {{ form.password }}
+
+        {{ renderfield(form.username) }}
+
+        {{ renderfield(form.password) }}
+
+        {{ renderfield(form.age) }}
+
+        {{ renderfield(form.true) }}
+
+        {{ renderfield(form.email) }}
+
         <input type="submit" value="Submit">
     </form>
 </body>
