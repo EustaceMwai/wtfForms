@@ -1,31 +1,25 @@
 from flask import Flask, render_template
-from flask_wtf import FlaskForm, RecaptchaField
-from wtforms import StringField, PasswordField
-from wtforms.validators import InputRequired, Length, AnyOf
+from flask_wtf import FlaskForm
+from wtforms import StringField, PasswordField, TextAreaField, RadioField, SelectField
+from wtforms.validators import InputRequired
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'Thisisasecret!'
-app.config['RECAPTCHA_PUBLIC_KEY'] = '6LdCy2caAAAAAKiqFiG4IWx1JmIR45EKJUxVbLFP'
-app.config['RECAPTCHA_PRIVATE_KEY'] = 'Y6LdCy2caAAAAABulZ4-AcKQ6fz5sfuH99p6Dsmxk'
-app.config['TESTING'] = True
 
+class MyForm(FlaskForm):
+    email = StringField('Email', validators=[InputRequired()])
+    password = PasswordField('Password', validators=[InputRequired()])
+    textarea = TextAreaField('Textarea')
+    radios = RadioField('Radios', default='option1', choices=[('option1', 'Option one is this'), ('option2', 'Option 2 can be something else')])
+    selects = SelectField('Select', choices=[('1', '1'), ('2', '2'), ('3', '3')])
 
-class LoginForm(FlaskForm):
-    username = StringField('username', validators=[InputRequired('A username is required!'), Length(min=5, max=10,
-                                                                                                    message='Must be between 5 and 10 characters.')])
-    password = PasswordField('password',
-                             validators=[InputRequired('Password is required!'), AnyOf(values=['password', 'secret'])])
-    recaptcha = RecaptchaField()
-
-
-@app.route('/form', methods=['GET', 'POST'])
+@app.route('/', methods=['GET', 'POST'])
 def form():
-    form = LoginForm()
+    form = MyForm()
 
     if form.validate_on_submit():
-        return '<h1>The username is {}. The password is {}.'.format(form.username.data, form.password.data)
+        return render_template('results.html', email=form.email.data, password=form.password.data, textarea=form.textarea.data, radios=form.radios.data, selects=form.selects.data)
     return render_template('form.html', form=form)
-
 
 if __name__ == '__main__':
     app.run(debug=True)
